@@ -23,6 +23,7 @@ export default function Chat() {
   const [onlineFriends, setOnlineFriends] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [image,setimage]=useState(null)
 
   const secretKey = process.env.REACT_APP_CRYPTO_SECRET;
   const crypto = new SimpleCrypto(secretKey);
@@ -69,7 +70,9 @@ export default function Chat() {
 
     });
 
-  
+  socket.on("recieve-Images",(messageImage)=>{
+
+  })
     
 
     return () => {
@@ -108,6 +111,22 @@ export default function Chat() {
 
   const handleEmojiPickerhideShow = () => {
     setShowEmojiPicker(!showEmojiPicker);
+  };
+
+  const handleImage=(e)=>{
+    console.log("hi")
+      console.log(e.target.files[0])
+    setimage(e.target.files[0])
+    const time = new Date();
+
+     socketRef.current.emit("send-Images", {
+      sendby: currentUserRef.current,
+      sendto: friendActive,
+      image,
+      time,
+    });
+
+    setimage("")
   };
 
   const handleEmojiClick = (emojiData, event) => {
@@ -184,7 +203,8 @@ export default function Chat() {
                   <Picker onEmojiClick={handleEmojiClick} theme="dark"/>
                 </div>
               )}
-              <img src={imageicon} className="message-input-icons" alt="icons"/>
+              <input type="file" onClick={handleImage} />
+              <img src={imageicon} className="message-input-icons" alt="icons" onClick={handleImage}/>
               <img src={sendicon} className="message-input-icons" alt="icons"/>
             </div>
           </div>
